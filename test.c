@@ -187,6 +187,7 @@ STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 }
 int main()//测除法和余数法
 {
+{
     uint64_t A=123123124;
     uint32_t B=1232;
 	uint64_t savei=0;
@@ -195,40 +196,41 @@ int main()//测除法和余数法
 	STT_64BIT C=div_64BIT(*(STT_64BIT *)(&A),B,(STT_64BIT *)(&savei));
 	printf("Hello, World!%ld \n",*(uint64_t *)(&C));
 	 printf("Hello, World!%ld \n",savei);
-   return 0;
+//   return 0;
 }
-int main()//测比较大小
+//int main()//测比较大小
 {
     uint64_t A=1232123213;
     uint64_t B=1232123213;
     char C=cmp_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
     printf("Hello, World!%hhd \n",C);
-   return 0;
+//   return 0;
 }
-int main()//测加法
+//int main()//测加法
 {
     uint64_t A=1232123213;
     uint64_t B=1232123213;
-    uint64_t C=add_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
+    STT_64BIT C=add_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
     printf("Hello, World!%llu \n",A+B);
-    printf("Hello, World!%llu \n",C);
-   return 0;
+    printf("Hello, World!%llu \n",*(uint64_t *)(&C));
+//   return 0;
 }
-int main()//测减法
+//int main()//测减法
 {
     uint64_t A=1232123213;
     uint64_t B=1232123213;
-    uint64_t C=sub_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
+    STT_64BIT C=sub_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
     printf("Hello, World!%llu \n",A-B);
-    printf("Hello, World!%llu \n",C);
-   return 0;
+    printf("Hello, World!%llu \n",*(uint64_t *)(&C));
+//   return 0;
 }
-int main()//测乘法
+//int main()//测乘法
 {
     uint64_t A=1232123213;
     uint64_t B=1232123213;
-    uint64_t C=mul_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
+    STT_64BIT C=mul_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
     printf("Hello, World!%llu \n",A*B);
-    printf("Hello, World!%llu \n",C);
-   return 0;
+    printf("Hello, World!%llu \n",*(uint64_t *)(&C));
+ //  return 0;
+}
 }
