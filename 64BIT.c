@@ -58,12 +58,13 @@ char cmp_64BIT(const STT_64BIT A,const STT_64BIT B)//149
 	    A_D=(*( A_P +1));
 	    B_D=(*( B_P +1));	
 	    if(A_D==B_D){goto GOTO_BREAK;};
-	    return (A_D>B_D ?1:-1);
+	   goto GOTO_END;
 	 };
 	 GOTO_BREAK: ;
 	A_D=(*( A_P ));
 	B_D=(*( B_P ));	
 	if(A_D==B_D){return 0;};
+	GOTO_END: ;
 	return (A_D>B_D ?1:-1);
 }
 //减法
