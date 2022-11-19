@@ -43,6 +43,34 @@ struct STT_TAG_64BIT
     uint16_t H_H;
 } ;
 typedef struct STT_TAG_64BIT STT_64BIT;
+
+extern char      cmp_64BIT(const STT_64BIT  A,const STT_64BIT  B);
+extern STT_64BIT sub_64BIT(const STT_64BIT  A,const STT_64BIT  B);
+extern STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B);
+extern STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B);
+extern STT_64BIT div_64BIT(STT_64BIT dividend, uint32_t divisor, STT_64BIT *remainder);
+
+//比较
+char cmp_64BIT(const STT_64BIT A,const STT_64BIT B)//149
+{
+	register uint32_t  A_D;
+	register uint32_t  B_D;	
+	register uint32_t * A_P=(uint32_t *)(&A);
+	register uint32_t * B_P=(uint32_t *)(&B);
+	 {
+	    A_D=(*( A_P +1));
+	    B_D=(*( B_P +1));	
+	    if(A_D==B_D){goto GOTO_BREAK;};
+	   goto GOTO_END;
+	 };
+	 GOTO_BREAK: ;
+	A_D=(*( A_P ));
+	B_D=(*( B_P ));	
+	if(A_D==B_D){return 0;};
+	GOTO_END: ;
+	return (A_D>B_D ?1:-1);
+}
+//减法
 STT_64BIT sub_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 {
 	STT_64BIT ret={0,0,0,0};
@@ -57,7 +85,7 @@ STT_64BIT sub_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 	};
 	return ret;
 }
-
+//加法
 STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 {
 	STT_64BIT ret={0,0,0,0};
@@ -72,22 +100,17 @@ STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 	};
 	return ret;
 }
-char cmp_64BIT(STT_64BIT A,STT_64BIT B)
-{
-	return  (( (*( ((uint32_t *)(&(A))) +1)) > (*( ((uint32_t *)(&(B))) +1))   )  ?  1 :                                                   
-		    (( (*( ((uint32_t *)(&(A))) +1)) < (*( ((uint32_t *)(&(B))) +1))   )  ? -1 :
-			(( (*( ((uint32_t *)(&(A)))   )) > (*( ((uint32_t *)(&(B)))   ))   )  ?  1 : 
-			(( (*( ((uint32_t *)(&(A)))   )) < (*( ((uint32_t *)(&(B)))   ))   )  ? -1 : 0 ))));
-}
 
 
-STT_64BIT  __div64_32(STT_64BIT *n, uint32_t base)
+
+static STT_64BIT  __div64_32(STT_64BIT *n, uint32_t base)
 {
-	STT_64BIT rem = *n;
-	STT_64BIT b ;
+	STT_64BIT rem;
+	STT_64BIT b  ;
 	STT_64BIT res={0,0,0,0}, d = {1,0,0,0};
-	uint32_t flag=0;
+	uint32_t flag =0;
 	uint32_t high = (*( ((uint32_t *)(n)) +1));
+	rem = *n;
 	(*( ((uint32_t *)(&(b)))   ))=base;
 	if (high >= base) {
 		high /= base;
@@ -97,8 +120,17 @@ STT_64BIT  __div64_32(STT_64BIT *n, uint32_t base)
 	while(((!((*( ((uint32_t *)(&(rem))) +1))==0 && (*( ((uint32_t *)(&(rem))) ))==0))&&
 		((*( ((int32_t *)(&(rem))) +1)) >=0))
                     &&(cmp_64BIT(b,rem)<0) ){
-		b=add_64BIT(b,b);
-		d=add_64BIT(d,d);
+		// b=add_64BIT(b,b);
+		// d=add_64BIT(d,d);
+		flag=((*( ((uint32_t *)(&(b)))  ))& (0X0001<<31) );
+		(*( ((uint32_t *)(&(b)))+1)) <<= 1;
+		(*( ((uint32_t *)(&(b)))  )) <<= 1;
+		(*( ((uint32_t *)(&(b)))+1)) +=  (flag>>31) ;
+
+		flag=((*( ((uint32_t *)(&(d)))  ))& (0X0001<<31) );
+		(*( ((uint32_t *)(&(d)))+1)) <<= 1;
+		(*( ((uint32_t *)(&(d)))  )) <<= 1;
+		(*( ((uint32_t *)(&(d)))+1)) +=  (flag>>31) ;
 	};
 	do {
 		if( cmp_64BIT(rem,b) >=0 ){
@@ -118,13 +150,41 @@ STT_64BIT  __div64_32(STT_64BIT *n, uint32_t base)
 	*n = res;
 	return rem;
 }
-
-STT_64BIT div_u64_rem(STT_64BIT dividend, uint32_t divisor, STT_64BIT *remainder)
+/* 
+ * unsigned 64位除法，需要的得到余数
+ * Param - u64	: 被除数
+ * Param - u32	: 除数
+ * Param - u32* : 除后的余数
+ * Return - u64	: 除后的结果
+ */
+STT_64BIT div_64BIT(STT_64BIT dividend, uint32_t divisor, STT_64BIT *remainder)
 {
-	*remainder = __div64_32(&dividend, divisor);
+	if(remainder!=NULL){
+		*remainder = __div64_32(&dividend, divisor);
+	}else{
+		__div64_32(&dividend, divisor);
+	};
 	return dividend;
 }
-
+//乘法
+STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B)
+{
+	char j,i;
+	STT_64BIT   ret={0,0,0,0};
+	uint16_t    tempdata[5]={0,0,0,0,0};
+	STT_64BIT * temp=(STT_64BIT *)tempdata;
+	for(j=0;j<=3 ;j++){
+		for(i=0;i<=3 ;i++ ){
+			if((i+j)>3){continue;};
+			((uint32_t *)(temp))[0]=0;
+			((uint32_t *)(temp))[1]=0;
+			* ((uint32_t *)(((uint16_t *)(temp)) +i+j))=
+			(((uint32_t)(* (((uint16_t*)(&A))+j) )) * ((uint32_t)(* (((uint16_t*)(&B))+i) )));
+			ret=add_64BIT(*temp,ret);
+		};
+	};
+	return ret;
+}
 int main()//测除法和余数法
 {
     uint64_t A=123123124;
@@ -132,7 +192,7 @@ int main()//测除法和余数法
 	uint64_t savei=0;
    printf("Hello, World!%ld \n",A/B);
    printf("Hello, World!%ld \n",A%B);
-	STT_64BIT C=div_u64_rem(*(STT_64BIT *)(&A),B,(STT_64BIT *)(&savei));
+	STT_64BIT C=div_64BIT(*(STT_64BIT *)(&A),B,(STT_64BIT *)(&savei));
 	printf("Hello, World!%ld \n",*(uint64_t *)(&C));
 	 printf("Hello, World!%ld \n",savei);
    return 0;
