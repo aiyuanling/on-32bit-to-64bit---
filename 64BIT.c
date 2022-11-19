@@ -48,24 +48,17 @@ extern STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B);
 extern STT_64BIT div_64BIT(STT_64BIT dividend, uint32_t divisor, STT_64BIT *remainder);
 
 //比较
-char cmp_64BIT(const STT_64BIT A,const STT_64BIT B)//149
+char cmp_64BIT(const STT_64BIT A,const STT_64BIT B)
 {
-	register uint32_t  A_D;
-	register uint32_t  B_D;	
 	register uint32_t * A_P=(uint32_t *)(&A);
-	register uint32_t * B_P=(uint32_t *)(&B);
-	 {
-	    A_D=A_P[1];
-	    B_D=B_P[1];	
-	    if(A_D==B_D){goto GOTO_BREAK;};
-	    goto GOTO_END;
-	 };
-	GOTO_BREAK: ;
-	A_D=A_P[0];
-	B_D=B_P[0];	
-	if(A_D==B_D){return 0;};
-	GOTO_END: ;
-	return (A_D>B_D ?1:-1);
+	register uint32_t * B_P=(uint32_t *)(&B);	
+        if( A_P[1]==B_P[1] ){
+		if(A_P[0]==B_P[0]){
+			return 0;
+		};
+		return ( A_P[0] > B_P[0] ?1:-1);
+	};
+	return ( A_P[1] > B_P[1] ?1:-1);
 }
 //减法
 STT_64BIT sub_64BIT(const STT_64BIT  A,const STT_64BIT  B)
