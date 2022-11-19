@@ -149,20 +149,19 @@ STT_64BIT div_64BIT(STT_64BIT dividend, uint32_t divisor, STT_64BIT *remainder)
 //乘法
 STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 {
-	char j,i,k;
-	STT_64BIT   ret={0,0,0,0};
-	uint16_t * A_P=(uint16_t *)(&A);
-	uint16_t * B_P=(uint16_t *)(&B);
-	for(j=0;j<=3 ;j++){
-		for(i=0;i<=3 ;i++ ){
-			if((k=i+j)>3){continue;};
-			{
-			uint16_t    temp[5]={0,0,0,0,0};
-			* ((uint32_t *)(temp + k ))=
-			(((uint32_t)(* (A_P+j) )) * ((uint32_t)(* (B_P+i) )));
-			ret=add_64BIT(*((STT_64BIT *)temp),ret);
-			};
+	register uint16_t * A_P=(uint16_t *)(&A);
+	register uint16_t * B_P=(uint16_t *)(&B);
+	register char j,i,k=3;
+	register uint32_t ret[2]={0,0};
+	register uint32_t * _A_P;
+	for(j=0;j<=3 ;j++,k--){
+		for(i=0;i<=k ;i++ ){
+			register uint16_t    temp[5]={0,0,0,0};
+			*((uint32_t *)(temp + i+j ))=(uint32_t)(A_P[j]) * (uint32_t)(B_P[i]);
+			_A_P=(uint32_t *)(temp);
+			ret[0]= _A_P[0] + ret[0];
+			ret[1]= _A_P[1] + ret[1] + (( ret[0] < _A_P[0] ) ? 1 : 0) ;
 		};
 	};
-	return ret;
+	return *((STT_64BIT *)ret);
 }
