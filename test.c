@@ -125,7 +125,7 @@ STT_64BIT div_u64_rem(STT_64BIT dividend, uint32_t divisor, STT_64BIT *remainder
 	return dividend;
 }
 
-int main()
+int main()//测除法和余数法
 {
     uint64_t A=123123124;
     uint32_t B=1232;
@@ -135,5 +135,31 @@ int main()
 	STT_64BIT C=div_u64_rem(*(STT_64BIT *)(&A),B,(STT_64BIT *)(&savei));
 	printf("Hello, World!%ld \n",*(uint64_t *)(&C));
 	 printf("Hello, World!%ld \n",savei);
+   return 0;
+}
+int main()//测比较大小
+{
+    uint64_t A=1232123213;
+    uint64_t B=1232123213;
+    char C=cmp_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
+    printf("Hello, World!%hhd \n",C);
+   return 0;
+}
+int main()//测加法
+{
+    uint64_t A=1232123213;
+    uint64_t B=1232123213;
+    uint64_t C=add_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
+    printf("Hello, World!%llu \n",A+B);
+    printf("Hello, World!%llu \n",C);
+   return 0;
+}
+int main()//测减法
+{
+    uint64_t A=1232123213;
+    uint64_t B=1232123213;
+    uint64_t C=sub_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
+    printf("Hello, World!%llu \n",A-B);
+    printf("Hello, World!%llu \n",C);
    return 0;
 }
