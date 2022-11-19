@@ -70,17 +70,12 @@ char cmp_64BIT(const STT_64BIT A,const STT_64BIT B)//149
 //减法
 STT_64BIT sub_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 {
-	STT_64BIT ret={0,0,0,0};
-
-	(*( ((uint32_t *)(&(ret))) +1)) =
-	(*( ((uint32_t *)(&(A))) +1))  - (*( ((uint32_t *)(&(B))) +1));    // 高位相减
-	if ( 
-		(  (*( ((uint32_t *)(&(ret))))) =(*( ((uint32_t *)(&(A))))) - (*( ((uint32_t *)(&(B)))))  )
-		> (*( ((uint32_t *)(&(A))))) 
-	 ) {                // 若低位不够减，则向高位借位
-		(*( ((uint32_t *)(&(ret))) +1))--;
-	};
-	return ret;
+	register uint32_t * A_P=(uint32_t *)(&A);
+	register uint32_t * B_P=(uint32_t *)(&B);
+	uint32_t ret[2]={0,0};
+	ret[0]= A_P[0] - B_P[0];
+	ret[1]= A_P[1] - B_P[1] - (( ret[0] > A_P[0] ) ? 1 : 0) ; 
+	return *((STT_64BIT *)ret);
 }
 //加法
 STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B)
