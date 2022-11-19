@@ -90,11 +90,12 @@ STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 
 static STT_64BIT  __div64_32(STT_64BIT *n, uint32_t base)
 {
-	STT_64BIT rem = *n;
-	STT_64BIT b ;
+	STT_64BIT rem;
+	STT_64BIT b  ;
 	STT_64BIT res={0,0,0,0}, d = {1,0,0,0};
-	uint32_t flag=0;
+	uint32_t flag =0;
 	uint32_t high = (*( ((uint32_t *)(n)) +1));
+	rem = *n;
 	(*( ((uint32_t *)(&(b)))   ))=base;
 	if (high >= base) {
 		high /= base;
