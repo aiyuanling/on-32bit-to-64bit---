@@ -95,8 +95,17 @@ STT_64BIT  __div64_32(STT_64BIT *n, uint32_t base)
 	while(((!((*( ((uint32_t *)(&(rem))) +1))==0 && (*( ((uint32_t *)(&(rem))) ))==0))&&
 		((*( ((int32_t *)(&(rem))) +1)) >=0))
                     &&(cmp_64BIT(b,rem)<0) ){
-		b=add_64BIT(b,b);
-		d=add_64BIT(d,d);
+		// b=add_64BIT(b,b);
+		// d=add_64BIT(d,d);
+		flag=((*( ((uint32_t *)(&(b)))  ))& (0X0001<<31) );
+		(*( ((uint32_t *)(&(b)))+1)) <<= 1;
+		(*( ((uint32_t *)(&(b)))  )) <<= 1;
+		(*( ((uint32_t *)(&(b)))+1)) +=  (flag>>31) ;
+
+		flag=((*( ((uint32_t *)(&(d)))  ))& (0X0001<<31) );
+		(*( ((uint32_t *)(&(d)))+1)) <<= 1;
+		(*( ((uint32_t *)(&(d)))  )) <<= 1;
+		(*( ((uint32_t *)(&(d)))+1)) +=  (flag>>31) ;
 	};
 	do {
 		if( cmp_64BIT(rem,b) >=0 ){
