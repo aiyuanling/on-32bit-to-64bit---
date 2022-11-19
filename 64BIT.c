@@ -40,6 +40,7 @@ struct STT_TAG_64BIT
     uint16_t H_H;
 } ;
 typedef struct STT_TAG_64BIT STT_64BIT;
+//比较
 char cmp_64BIT(STT_64BIT A,STT_64BIT B)
 {
 	return  (( (*( ((uint32_t *)(&(A))) +1)) > (*( ((uint32_t *)(&(B))) +1))   )  ?  1 :                                                   
@@ -47,6 +48,7 @@ char cmp_64BIT(STT_64BIT A,STT_64BIT B)
 			(( (*( ((uint32_t *)(&(A)))   )) > (*( ((uint32_t *)(&(B)))   ))   )  ?  1 : 
 			(( (*( ((uint32_t *)(&(A)))   )) < (*( ((uint32_t *)(&(B)))   ))   )  ? -1 : 0 ))));
 }
+//减法
 STT_64BIT sub_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 {
 	STT_64BIT ret={0,0,0,0};
@@ -61,7 +63,7 @@ STT_64BIT sub_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 	};
 	return ret;
 }
-
+//加法
 STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 {
 	STT_64BIT ret={0,0,0,0};
@@ -132,8 +134,27 @@ STT_64BIT  __div64_32(STT_64BIT *n, uint32_t base)
  * Param - u32* : 除后的余数
  * Return - u64	: 除后的结果
  */
-STT_64BIT div_u64_rem(STT_64BIT dividend, uint32_t divisor, STT_64BIT *remainder)
+STT_64BIT div_64BIT(STT_64BIT dividend, uint32_t divisor, STT_64BIT *remainder)
 {
 	*remainder = __div64_32(&dividend, divisor);
 	return dividend;
+}
+//乘法
+STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B)
+{
+	char j,i;
+	STT_64BIT   ret={0,0,0,0};
+	uint16_t    tempdata[5]={0,0,0,0,0};
+	STT_64BIT * temp=(STT_64BIT *)tempdata;
+	for(j=0;j<=3 ;j++){
+		for(i=0;i<=3 ;i++ ){
+			if((i+j)>3){continue;};
+			((uint32_t *)(temp))[0]=0;
+			((uint32_t *)(temp))[1]=0;
+			* ((uint32_t *)(((uint16_t *)(temp)) +i+j))=
+			(((uint32_t)(* (((uint16_t*)(&A))+j) )) * ((uint32_t)(* (((uint16_t*)(&B))+i) )));
+			ret=add_64BIT(*temp,ret);
+		};
+	};
+	return ret;
 }
