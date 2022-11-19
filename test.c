@@ -163,3 +163,12 @@ int main()//测减法
     printf("Hello, World!%llu \n",C);
    return 0;
 }
+int main()//测乘法
+{
+    uint64_t A=1232123213;
+    uint64_t B=1232123213;
+    uint64_t C=mul_64BIT(*(STT_64BIT *)(&A),*(STT_64BIT *)(&B));
+    printf("Hello, World!%llu \n",A*B);
+    printf("Hello, World!%llu \n",C);
+   return 0;
+}
