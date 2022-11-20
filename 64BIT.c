@@ -146,20 +146,34 @@ STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 {
 	register uint16_t * A_P=(uint16_t *)(&A);
 	register uint16_t * B_P=(uint16_t *)(&B);
-	register uint8_t j,i,k=3;
+	register uint8_t j,k=3;
 	register uint32_t ret[2]={0,0};
+	if( ((uint32_t *)A_P)[1] > ((uint32_t *)B_P)[1] ){
+		register uint16_t * temp_P=A_P;
+		A_P=B_P;
+		B_P=temp_P;
+	};
 	for(j=0;j<=3 ;j++,k--){
-		i=0;
-		if(A_P[j] == 0 || B_P[i] == 0){
+		if(A_P[j] == 0 ){
 			continue;
 		};
-		for(;i<=k ;i++ ){
-			register uint32_t * _A_P;
-			register uint16_t    temp[5]={0,0,0,0};
-			*((uint32_t *)(temp + i+j ))=(uint32_t)(A_P[j]) * (uint32_t)(B_P[i]);
-			_A_P=(uint32_t *)(temp);
-			ret[0] += _A_P[0] ;
-			ret[1] += _A_P[1] + (( ret[0] < _A_P[0] ) ? 1 : 0) ;
+		{
+			register uint8_t i=0;
+			for(; i<= k;i++ ){
+			    if( B_P[i] == 0){
+					continue;
+				};
+				{
+					register uint32_t * _A_P;
+						{
+							register uint16_t    temp[5]={0,0,0,0};
+							*((uint32_t *)(temp + i+j ))=(uint32_t)(A_P[j]) * (uint32_t)(B_P[i]);
+							_A_P=(uint32_t *)(temp);		
+						};
+					ret[0] += _A_P[0] ;
+					ret[1] += _A_P[1] + (( ret[0] < _A_P[0] ) ? 1 : 0) ;				
+				};
+			};
 		};
 	};
 	return *((STT_64BIT *)ret);
