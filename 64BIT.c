@@ -85,43 +85,43 @@ static STT_64BIT  __div64_32(STT_64BIT *n, uint32_t base)
 {
 	STT_64BIT rem, b={0,0,0,0}, res={0,0,0,0}, d = {1,0,0,0};
 	uint32_t flag=0 ,high=(*( ((uint32_t *)(n)) +1));
+	uint32_t * res_P=(uint32_t *)(&res);
+	uint32_t *	rem_P=(uint32_t *)(&rem);
+	uint32_t *	b_P=(uint32_t *)(&b);
+	uint32_t *	d_P=(uint32_t *)(&d);
 	rem = *n;
-	(*( ((uint32_t *)(&(b)))   ))=base;
+	b_P[0]=base;
 	if (high >= base) {
 		high /= base;
-		(*( ((uint32_t *)(&(res))) +1))=high;
-		(*( ((uint32_t *)(&(rem))) +1)) -= (high*base);
+		res_P[1]  =  high;
+		rem_P[1]  -= (high*base);
 	};
-	while(((!((*( ((uint32_t *)(&(rem))) +1))==0 && (*( ((uint32_t *)(&(rem))) ))==0))&&
-		((*( ((int32_t *)(&(rem))) +1)) >=0))
-                    &&(cmp_64BIT(b,rem)<0) ){
-		// b=add_64BIT(b,b);
-		// d=add_64BIT(d,d);
-		flag=((*( ((uint32_t *)(&(b)))  ))& (0X0001<<31) );
-		(*( ((uint32_t *)(&(b)))+1)) <<= 1;
-		(*( ((uint32_t *)(&(b)))  )) <<= 1;
-		(*( ((uint32_t *)(&(b)))+1)) +=  (flag>>31) ;
-
-		flag=((*( ((uint32_t *)(&(d)))  ))& (0X0001<<31) );
-		(*( ((uint32_t *)(&(d)))+1)) <<= 1;
-		(*( ((uint32_t *)(&(d)))  )) <<= 1;
-		(*( ((uint32_t *)(&(d)))+1)) +=  (flag>>31) ;
+	while(  ( rem_P[1] !=0 || rem_P[0]!=0 )
+		     &&( ((int32_t *)rem_P)[1] >=0) 
+             &&(cmp_64BIT(b,rem)<0) ){
+		flag=(b_P[0]& (0X0001<<31) );
+		b_P[1] <<= 1;
+		b_P[0] <<= 1;
+		b_P[1] +=  (flag>>31) ;
+		flag=(d_P[0]& (0X0001<<31) );
+		d_P[1] <<= 1;
+		d_P[0] <<= 1;
+		d_P[1] +=  (flag>>31) ;
 	};
 	do {
 		if( cmp_64BIT(rem,b) >=0 ){
 			rem = sub_64BIT(rem,b);
 			res = add_64BIT(res,d);
 		};
-		flag=((*( ((uint32_t *)(&(b)))+1))&0X01);
-		(*( ((uint32_t *)(&(b)))+1)) >>= 1;
-		(*( ((uint32_t *)(&(b)))  )) >>= 1;
-		(*( ((uint32_t *)(&(b)))  )) +=  (flag<<31) ;
-		flag=((*( ((uint32_t *)(&(d)))+1))&0X01);
-		(*( ((uint32_t *)(&(d)))+1)) >>= 1;
-		(*( ((uint32_t *)(&(d)))  )) >>= 1;
-		(*( ((uint32_t *)(&(d)))  )) +=  (flag<<31) ;
-	} while ( (!((*( ((uint32_t *)(&(d))) +1))==0 && (*( ((uint32_t *)(&(d))) ))==0)) );
-
+		flag=(b_P[1]&0X01);
+		b_P[1] >>= 1;
+		b_P[0] >>= 1;
+		b_P[0] +=  (flag<<31) ;
+		flag=(d_P[1]&0X01);
+		d_P[1] >>= 1;
+		d_P[0] >>= 1;
+		d_P[0] +=  (flag<<31) ;
+	} while ( d_P[1]!=0 || d_P[0]!=0 );
 	*n = res;
 	return rem;
 }
