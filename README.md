@@ -3,7 +3,7 @@
 目前实现了
 加法
 减法
-除法和余法(还有问题不能用)
+除法和余法
 比较法
 乘法
 
@@ -11,6 +11,6 @@ The following is the machine translation:
 So far it's happening
 add
 subtraction
-Division and remainder (there are still problems that can't be used)
+Division and remainder 
 Method of comparison
 The multiplication
