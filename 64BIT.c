@@ -45,7 +45,7 @@ extern char      cmp_64BIT(const STT_64BIT  A,const STT_64BIT  B);
 extern STT_64BIT sub_64BIT(const STT_64BIT  A,const STT_64BIT  B);
 extern STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B);
 extern STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B);
-extern STT_64BIT div_64BIT(STT_64BIT dividend, uint32_t divisor, STT_64BIT *remainder);
+extern STT_64BIT div_64BIT(STT_64BIT rem, uint32_t base, STT_64BIT *remainder);
 
 //比较
 char cmp_64BIT(const STT_64BIT A,const STT_64BIT B)
@@ -78,10 +78,6 @@ STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 	ret[1]= A_P[1] + B_P[1] + (( ret[0] < A_P[0] ) ? 1 : 0) ; 
 	return *((STT_64BIT *)ret);
 }
-
-
-
-
 /* 
  * unsigned 64位除法，需要的得到余数
  * Param - u64	: 被除数
@@ -91,13 +87,15 @@ STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B)
  */
 STT_64BIT  div_64BIT(STT_64BIT rem, uint32_t base, STT_64BIT *remainder)
 {
-	STT_64BIT  b={0,0,0,0}, res={0,0,0,0}, d = {1,0,0,0};
-	uint32_t *  res_P =(uint32_t *)(&res);
-	uint32_t *	rem_P =(uint32_t *)(&rem);
-	uint32_t *	b_P   =(uint32_t *)(&b);
-	uint32_t *	d_P   =(uint32_t *)(&d);
+	register STT_64BIT  b     = {0,0,0,0};
+	register STT_64BIT  res   = {0,0,0,0};
+	register STT_64BIT  d     = {1,0,0,0};
+	register uint32_t *     res_P =(uint32_t *)(&res);
+	register uint32_t *	rem_P =(uint32_t *)(&rem);
+	register uint32_t *	b_P   =(uint32_t *)(&b);
+	register uint32_t *	d_P   =(uint32_t *)(&d);
 	{
-		uint32_t    high  =(*( ((uint32_t *)(&rem)) +1));
+		register uint32_t    high  =(*( ((uint32_t *)(&rem)) +1));
 		b_P[0]=base;
 		if (high >= base) {
 			high /= base;
