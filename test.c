@@ -102,69 +102,73 @@ STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 }
 
 
-
-static STT_64BIT  __div64_32(STT_64BIT *n, uint32_t base)
-{
-	STT_64BIT rem;
-	STT_64BIT b  ;
-	STT_64BIT res={0,0,0,0}, d = {1,0,0,0};
-	uint32_t flag =0;
-	uint32_t high = (*( ((uint32_t *)(n)) +1));
-	rem = *n;
-	(*( ((uint32_t *)(&(b)))   ))=base;
-	if (high >= base) {
-		high /= base;
-		(*( ((uint32_t *)(&(res))) +1))=high;
-		(*( ((uint32_t *)(&(rem))) +1)) -= (high*base);
-	};
-	while(((!((*( ((uint32_t *)(&(rem))) +1))==0 && (*( ((uint32_t *)(&(rem))) ))==0))&&
-		((*( ((int32_t *)(&(rem))) +1)) >=0))
-                    &&(cmp_64BIT(b,rem)<0) ){
-		// b=add_64BIT(b,b);
-		// d=add_64BIT(d,d);
-		flag=((*( ((uint32_t *)(&(b)))  ))& (0X0001<<31) );
-		(*( ((uint32_t *)(&(b)))+1)) <<= 1;
-		(*( ((uint32_t *)(&(b)))  )) <<= 1;
-		(*( ((uint32_t *)(&(b)))+1)) +=  (flag>>31) ;
-
-		flag=((*( ((uint32_t *)(&(d)))  ))& (0X0001<<31) );
-		(*( ((uint32_t *)(&(d)))+1)) <<= 1;
-		(*( ((uint32_t *)(&(d)))  )) <<= 1;
-		(*( ((uint32_t *)(&(d)))+1)) +=  (flag>>31) ;
-	};
-	do {
-		if( cmp_64BIT(rem,b) >=0 ){
-			rem = sub_64BIT(rem,b);
-			res = add_64BIT(res,d);
-		};
-		flag=((*( ((uint32_t *)(&(b)))+1))&0X01);
-		(*( ((uint32_t *)(&(b)))+1)) >>= 1;
-		(*( ((uint32_t *)(&(b)))  )) >>= 1;
-		(*( ((uint32_t *)(&(b)))  )) +=  (flag<<31) ;
-		flag=((*( ((uint32_t *)(&(d)))+1))&0X01);
-		(*( ((uint32_t *)(&(d)))+1)) >>= 1;
-		(*( ((uint32_t *)(&(d)))  )) >>= 1;
-		(*( ((uint32_t *)(&(d)))  )) +=  (flag<<31) ;
-	} while ( (!((*( ((uint32_t *)(&(d))) +1))==0 && (*( ((uint32_t *)(&(d))) ))==0)) );
-
-	*n = res;
-	return rem;
-}
 /* 
  * unsigned 64位除法，需要的得到余数
  * Param - u64	: 被除数
  * Param - u32	: 除数
- * Param - u32* : 除后的余数
+ * Param - u64* : 除后的余数
  * Return - u64	: 除后的结果
  */
-STT_64BIT div_64BIT(STT_64BIT dividend, uint32_t divisor, STT_64BIT *remainder)
+STT_64BIT  div_64BIT(STT_64BIT rem, uint32_t base, STT_64BIT *remainder)
 {
-	if(remainder!=NULL){
-		*remainder = __div64_32(&dividend, divisor);
-	}else{
-		__div64_32(&dividend, divisor);
+	STT_64BIT  b={0,0,0,0}, res={0,0,0,0}, d = {1,0,0,0};
+	uint32_t *  res_P =(uint32_t *)(&res);
+	uint32_t *	rem_P =(uint32_t *)(&rem);
+	uint32_t *	b_P   =(uint32_t *)(&b);
+	uint32_t *	d_P   =(uint32_t *)(&d);
+	{
+		uint32_t    high  =(*( ((uint32_t *)(&rem)) +1));
+		b_P[0]=base;
+		if (high >= base) {
+			high /= base;
+			res_P[1]  =  high;
+			rem_P[1]  -= (high*base);
+		};
 	};
-	return dividend;
+	while(  ( rem_P[1] !=0 || rem_P[0]!=0 )
+		     &&( ((int32_t *)rem_P)[1] >=0) //&&(cmp_64BIT(b,rem)<0)
+	         &&(( b_P[1]== rem_P[1] ) ?
+			   (( b_P[0]== rem_P[0] ) ? 0 : 
+			   (( b_P[0] > rem_P[0] ) ? 0 : 1))
+		                                  :
+		       (( b_P[1] > rem_P[1] ) ? 0 : 1)) ){
+		b_P[1] <<= 1;
+		if(( ((uint8_t *)b_P)[3] & (0X01<<7) )!=0){
+			((uint8_t *)b_P)[4]++;
+		};
+		b_P[0] <<= 1;
+		d_P[1] <<= 1;
+		if(( ((uint8_t *)d_P)[3] & (0X01<<7) )!=0){
+			((uint8_t *)d_P)[4]++;
+		};
+		d_P[0] <<= 1;
+	};
+	do {
+		if(    (( rem_P[1]== b_P[1] ) ?
+			   (( rem_P[0]== b_P[0] ) ? 1 : 
+			   (( rem_P[0] > b_P[0] ) ? 1 : 0))
+		                                  :
+		       (( rem_P[1] > b_P[1] ) ? 1 : 0)) ){//cmp_64BIT(rem,b) >=0
+	rem_P[1] -= (b_P[1] + (( rem_P[0] <  b_P[0] ) ? 1 : 0)) ; 
+	rem_P[0] -=  b_P[0];//rem = sub_64BIT(rem,b);
+	res_P[0] +=  d_P[0];//res = add_64BIT(res,d);
+	res_P[1] += (d_P[1] + (( res_P[0] <  d_P[0] ) ? 1 : 0)) ; 	
+		};
+		b_P[0] >>= 1;
+		if(( ((uint8_t *)b_P)[4] & (0X01) )!=0){
+			((uint8_t *)b_P)[3] |= (0X01<<7);
+		};
+		b_P[1] >>= 1;
+		d_P[0] >>= 1;
+		if(( ((uint8_t *)d_P)[4] & (0X01) )!=0){
+			((uint8_t *)d_P)[3] |= (0X01<<7);
+		};
+		d_P[1] >>= 1;
+	} while ( d_P[1]!=0 || d_P[0]!=0 );
+	if(remainder!=NULL){
+		*remainder = rem;
+	}
+	return res;
 }
 //乘法
 STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B)
