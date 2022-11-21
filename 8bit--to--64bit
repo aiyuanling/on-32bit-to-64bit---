@@ -1,0 +1,20 @@
+//对8位寄存器进行优化,针对51单片机只有8位寄存器，调试对象是KEIL51环境
+char cmp_64BIT1( STT_64BIT* A, STT_64BIT* B)
+{
+	register uint8_t * A_P=(uint8_t *)(A);
+	register uint8_t * B_P=(uint8_t *)(B);	
+	register uint8_t i;
+
+	for(i=7;i>0;i++){
+		if(A_P[i]==B_P[i]){
+			continue; 
+		}
+		else{
+			if(A_P[i]>B_P[i]){
+				return 1;
+			};
+			return -1;
+		};
+	};
+	return 0;
+}
