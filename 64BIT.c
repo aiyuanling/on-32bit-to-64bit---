@@ -172,11 +172,9 @@ STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 				};
 				{
 					register uint32_t * _A_P;
-						{
-							register uint16_t    temp[5]={0,0,0,0};
-							*((uint32_t *)(temp + i+j ))=(uint32_t)(A_P[j]) * (uint32_t)(B_P[i]);
-							_A_P=(uint32_t *)(temp);		
-						};
+					register uint16_t    temp[5]={0,0,0,0};
+					*((uint32_t *)(temp + i+j ))=(uint32_t)(A_P[j]) * (uint32_t)(B_P[i]);
+					_A_P=(uint32_t *)(temp);		
 					ret[0] += _A_P[0] ;
 					ret[1] += _A_P[1] + (( ret[0] < _A_P[0] ) ? 1 : 0) ;				
 				};
