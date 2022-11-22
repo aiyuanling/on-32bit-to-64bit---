@@ -87,13 +87,10 @@ STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B)
  */
 STT_64BIT  div_64BIT(STT_64BIT rem, uint32_t base, STT_64BIT *remainder)
 {
-	register STT_64BIT  b     = {0,0,0,0};
-	register STT_64BIT  res   = {0,0,0,0};
-	register STT_64BIT  d     = {1,0,0,0};
-	register uint32_t *     res_P =(uint32_t *)(&res);
-	register uint32_t *	rem_P =(uint32_t *)(&rem);
-	register uint32_t *	b_P   =(uint32_t *)(&b);
-	register uint32_t *	d_P   =(uint32_t *)(&d);
+	register uint32_t   res_P[2] ={0,0};
+	register uint32_t * rem_P    =(uint32_t *)(&rem);
+	register uint32_t 	b_P[2]   ={0,0};
+	register uint32_t 	d_P[2]   ={1,0};
 	{
 		register uint32_t    high  =(*( ((uint32_t *)(&rem)) +1));
 		b_P[0]=base;
@@ -144,9 +141,9 @@ STT_64BIT  div_64BIT(STT_64BIT rem, uint32_t base, STT_64BIT *remainder)
 		d_P[1] >>= 1;
 	} while ( d_P[1]!=0 || d_P[0]!=0 );
 	if(remainder!=NULL){
-		*remainder = rem;
+		*remainder = *((STT_64BIT *)rem_P);
 	};
-	return res;
+	return *((STT_64BIT *)res_P);
 }
 //乘法
 STT_64BIT mul_64BIT(const STT_64BIT  A,const STT_64BIT  B)
