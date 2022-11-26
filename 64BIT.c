@@ -65,7 +65,8 @@ STT_64BIT sub_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 	register uint32_t * B_P=(uint32_t *)(&B);
 	register uint32_t ret[2];
 	ret[0]= A_P[0] - B_P[0];
-	ret[1]= A_P[1] - B_P[1] - (( ret[0] > A_P[0] ) ? 1 : 0) ; 
+	ret[1]= A_P[1] - B_P[1];
+	if( ret[0] > A_P[0] ){ ret[1]--;};
 	return *((STT_64BIT *)ret);
 }
 //加法
@@ -75,7 +76,8 @@ STT_64BIT add_64BIT(const STT_64BIT  A,const STT_64BIT  B)
 	register uint32_t * B_P=(uint32_t *)(&B);
 	register uint32_t ret[2];
 	ret[0]= A_P[0] + B_P[0];
-	ret[1]= A_P[1] + B_P[1] + (( ret[0] < A_P[0] ) ? 1 : 0) ; 
+	ret[1]= A_P[1] + B_P[1];
+	if( ret[0] < A_P[0] ){ret[1]++;};
 	return *((STT_64BIT *)ret);
 }
 /* 
